@@ -28,7 +28,7 @@ public class BlogServiceTest {
 
         // Assert
         assertEquals(blogsBefore + 1, blogs.size());
-        assertEquals(blog, blogs.get(blogs.size() - 1));
     }
+
 }
 

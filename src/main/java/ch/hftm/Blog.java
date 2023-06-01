@@ -1,15 +1,20 @@
 package ch.hftm;
 
+import java.util.List;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
-public class Blog {
-    @Id @GeneratedValue
-    private Long id;
+public class Blog extends PanacheEntity{
+    
     private String title;
     private String content;
+
+    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
+    public List<Comment> comments;
     
     public Blog() {
     }
@@ -32,3 +37,4 @@ public class Blog {
         this.content = content;
     }
 }
+
