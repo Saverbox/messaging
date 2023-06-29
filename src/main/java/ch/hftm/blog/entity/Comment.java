@@ -1,14 +1,22 @@
-package ch.hftm;
+package ch.hftm.blog.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Comment extends PanacheEntity {
 
-    public String text;
+    private String text;
 
     @ManyToOne
-    public Blog blog;
+    private Blog blog;
+
 }
