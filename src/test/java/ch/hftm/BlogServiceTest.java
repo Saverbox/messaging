@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import ch.hftm.blog.control.BlogService;
+import ch.hftm.blog.entity.Blog;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 
