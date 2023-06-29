@@ -23,3 +23,23 @@ Durch den PanacheEntity Import habe ich die Objekte Persistiert und über die An
     public Blog blog;
 
 ```
+## API-Design
+
+Für die Abfrage der Blogs sollen folgende Funktionen zur verfügung stehen:
+
+### Blog-API-Functions:
+GET /blogs: Ruft alle Blogs ab.
+GET /blogs/{id}: Ruft einen bestimmten Blog anhand der ID ab.
+POST /blogs: Erstellt einen neuen Blog.
+PUT /blogs/{id}: Aktualisiert einen bestimmten Blog anhand der ID.
+DELETE /blogs/{id}: Löscht einen bestimmten Blog anhand der ID.
+GET /blogs/{id}/comments: Ruft alle Kommentare für einen bestimmten Blog anhand der ID ab.
+POST /blogs/{id}/comments: Erstellt einen neuen Kommentar für einen bestimmten Blog anhand der ID.
+
+### Comment-API-Functions:
+GET /comments: Ruft alle Kommentare ab.
+GET /comments/{id}: Ruft einen bestimmten Kommentar anhand der ID ab.
+PUT /comments/{id}: Aktualisiert einen bestimmten Kommentar anhand der ID.
+DELETE /comments/{id}: Löscht einen bestimmten Kommentar anhand der ID.
+
+Ich habe bereits begonnen einzelne Ansatze umzusetzen und die nötigen Abfragen in der Service Klasse zu erstellen.
