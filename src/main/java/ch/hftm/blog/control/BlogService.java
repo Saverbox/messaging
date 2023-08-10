@@ -19,15 +19,9 @@ public class BlogService {
     @Inject
     Logger logger;
 
-
     public List<Blog> getBlogs() {
         var blogs = blogRepository.listAll();
         logger.info("Returning " + blogs.size() + " blogs");
-        return blogs;
-    }
-    public List<Blog> findBlogs(String searchString) { 
-        var blogs = blogRepository.find("title like ?1 or contend like 1?", "%" + searchString + "%").list();
-        logger.info("Found " + blogs.size() + "blogs");
         return blogs;
     }
 
@@ -35,6 +29,36 @@ public class BlogService {
     public void addBlog(Blog blog) {
         logger.info("Adding blog " + blog.getTitle());
         blogRepository.persist(blog);
+    }
+
+    @Transactional
+    public Blog getBlogById(Long blogId) {
+        var blog = blogRepository.findByIdOptional(blogId);
+        if (blog.isPresent()) {
+            return blog.get();
+        } else {
+            throw new NotFoundException("Blog with ID " + blogId + " not found");
+        }
+    }
+
+    @Transactional
+    public void updateBlog(Long blogId, Blog newBlogData) {
+        var existingBlog = blogRepository.findByIdOptional(blogId);
+        if (existingBlog.isPresent()) {
+            Blog blog = existingBlog.get();
+            blog.setTitle(newBlogData.getTitle());
+            blog.setContent(newBlogData.getContent());
+            blogRepository.persist(blog);
+        } else {
+            throw new NotFoundException("Blog not found");
+        }
+    }
+
+    @Transactional
+    public void deleteBlog(Long blogId) {
+        if (!blogRepository.deleteById(blogId)) {
+            throw new NotFoundException("Blog with ID " + blogId + " not found");
+        }
     }
 
     public List<Comment> getCommentsForBlog(Long blogId) {
@@ -59,6 +83,16 @@ public class BlogService {
         } else {
             throw new NotFoundException("Blog not found");
         }
+    }
+
+    @Transactional
+    public void deleteComment(Long blogId, Long commentId) {
+        Blog blog = getBlogById(blogId);
+        Comment comment = Comment.findById(commentId);
+        if (comment == null || comment.getBlog().getId() != blogId) {
+            throw new NotFoundException("Comment with ID " + commentId + " not found for Blog " + blogId);
+        }
+        comment.delete();
     }
 
 }
