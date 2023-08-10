@@ -25,30 +25,31 @@ Durch den PanacheEntity Import habe ich die Objekte Persistiert und über die An
 ```
 ## API-Design
 
-Für die Abfrage der Blogs sollen folgende Funktionen zur verfügung stehen:
+Für die Abfrage der Blogs stehen folgende Funktionen zur verfügung:
 
-### Blog-API-Functions:
-GET /blogs: Ruft alle Blogs ab.
+### Blog-API-Funktionen:
+GET /blogs: Ruft alle Blog-Einträge ab.
 
-GET /blogs/{id}: Ruft einen bestimmten Blog anhand der ID ab.
+GET /blogs/{id}: Zeigt einen spezifischen Blog-Eintrag basierend auf seiner ID.
 
-POST /blogs: Erstellt einen neuen Blog.
+POST /blogs: Fügt einen neuen Blog-Eintrag hinzu.
 
-PUT /blogs/{id}: Aktualisiert einen bestimmten Blog anhand der ID.
+PUT /blogs/{id}: Aktualisiert einen Blog-Eintrag.
 
-DELETE /blogs/{id}: Löscht einen bestimmten Blog anhand der ID.
+DELETE /blogs/{id}: Löscht einen Blog-Eintrag nach ID.
 
-GET /blogs/{id}/comments: Ruft alle Kommentare für einen bestimmten Blog anhand der ID ab.
+GET /blogs/{id}/comments: Zeigt alle Kommentare eines Blog-Eintrags basierend auf der Blog-ID.
 
-POST /blogs/{id}/comments: Erstellt einen neuen Kommentar für einen bestimmten Blog anhand der ID.
+POST /blogs/{id}/comments: Fügt einen Kommentar zu einem Blog-Eintrag hinzu.
 
-### Comment-API-Functions:
+DELETE /blogs/{blogId}/comments/{commentId}: Löscht einen Kommentar von einem bestimmten Blog-Eintrag.
+
+### Kommentar-API-Funktionen:
 GET /comments: Ruft alle Kommentare ab.
 
-GET /comments/{id}: Ruft einen bestimmten Kommentar anhand der ID ab.
+GET /comments/{id}: Einen Kommentar anhand seiner ID abrufen.
 
-PUT /comments/{id}: Aktualisiert einen bestimmten Kommentar anhand der ID.
+PUT /comments/{id}: Einen Kommentar aktualisieren.
 
-DELETE /comments/{id}: Löscht einen bestimmten Kommentar anhand der ID.
+DELETE /comments/{id}: Einen Kommentar löschen.
 
-Ich habe bereits begonnen einzelne Ansatze umzusetzen und die nötigen Abfragen in der Service Klasse zu erstellen.
