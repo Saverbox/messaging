@@ -1,6 +1,8 @@
 package ch.hftm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -30,6 +32,20 @@ public class BlogServiceTest {
 
         // Assert
         assertEquals(blogsBefore + 1, blogs.size());
+
+        
+    }
+     @Test
+    public void testAddAndDeleteBlog() {
+        Blog blog = new Blog("Test Title", "Test Content");
+        blogService.addBlog(blog);
+
+        // Überprüfen, ob der Blog hinzugefügt wurde
+        assertFalse(blogService.getBlogs().isEmpty());
+
+        // Löschen und überprüfen
+        blogService.deleteBlog(blog.getId());
+        assertTrue(blogService.getBlogs().isEmpty());
     }
 
 }
