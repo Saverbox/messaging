@@ -53,3 +53,26 @@ PUT /comments/{id}: Einen Kommentar aktualisieren.
 
 DELETE /comments/{id}: Einen Kommentar löschen.
 
+## Berechtigungskonzept
+
+Verschiedene Benutzer könnten unterschiedliche Rollen und damit unterschiedliche Berechtigungen haben:
+
+**Guest:** Ein nicht angemeldeter Benutzer. Hat nur Zugriff auf öffentliche Methoden.
+
+**Blogger:** Ein angemeldeter Benutzer, der Blogs und Kommentare erstellen, bearbeiten und löschen kann, aber nur seine eigenen.
+
+**Admin:** Ein Benutzer mit höheren Rechten, der auf alle Funktionen und alle Blog-Einträge zugreifen kann.
+
+Die Funktionen werden folgendermassen zugeteilt:
+
+| Guest / Öffentlich: | Blogger: | Admin: |
+| ----------- | ----------- | ----------- |
+|Alle GET Funktionen| POST / PUT / DELETE auf eigenen Blogs| Alle Funktionen | 
+
+
+
+
+
+
+
+
