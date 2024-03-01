@@ -5,6 +5,8 @@ import java.util.List;
 import org.jboss.logging.Logger;
 
 import ch.hftm.blog.entity.Blog;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -18,6 +20,10 @@ public class BlogService {
     @Inject
     Logger logger;
 
+    @Inject
+    @Channel("validation-request")
+    Emitter<ValidationRequest> validationRequestEmitter;
+
     public List<Blog> getBlogs() {
         var blogs = blogRepository.listAll();
         logger.info("Returning " + blogs.size() + " blogs");
@@ -25,9 +31,23 @@ public class BlogService {
     }
 
     @Transactional
-    public void addBlog(Blog blog) {
+    public Blog addBlog(Blog blog) {
         logger.info("Adding blog " + blog.getTitle());
         blogRepository.persist(blog);
+        return blog; // Rückgabe des gespeicherten Blogs
+    }
+
+    public void sendValidationRequest(Blog blog) {
+        if (blog.getId() == null) {
+            logger.error("Blog ID is null, cannot send validation request");
+            return;
+        }
+        validationRequestEmitter.send(new ValidationRequest(blog.getId(), blog.getTitle() + " " + blog.getContent()));
+    }
+
+    public void createAndValidateBlog(Blog blog) {
+        Blog savedBlog = addBlog(blog); // Speichert den Blog
+        sendValidationRequest(savedBlog); // Sendet die Validierungsanfrage
     }
 
     @Transactional

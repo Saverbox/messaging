@@ -16,7 +16,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
 
 @Path("blogs") // Unter welchem Web-Pfad ist die Ressource erreichbar ist. Diese Annotation
                // darfst du zusätzlich auch direkt über der Methode anbringen
@@ -35,8 +35,14 @@ public class BlogResource {
 
     @POST
     @Operation(summary = "Fügt einen neuen Blog-Eintrag hinzu")
-    public void addBlog(Blog blog) {
-        this.blogService.addBlog(blog);
+    public Response addBlog(Blog blog) {
+        try {
+            blogService.createAndValidateBlog(blog);
+            return Response.status(Response.Status.CREATED).entity(blog).build();
+        } catch (Exception e) {
+            // Fehlerbehandlung
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Fehler beim Hinzufügen des Blogs").build();
+        }
     }
 
     @Path("{id}")
