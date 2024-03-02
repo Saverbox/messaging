@@ -1,11 +1,15 @@
 package ch.hftm.blog.control;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jboss.logging.Logger;
 
 import ch.hftm.blog.entity.Blog;
-import ch.hftm.blog.entity.Comment;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -19,6 +23,10 @@ public class BlogService {
     @Inject
     Logger logger;
 
+    @Inject
+    @Channel("validation-request")
+    Emitter<ValidationRequest> validationRequestEmitter;
+
     public List<Blog> getBlogs() {
         var blogs = blogRepository.listAll();
         logger.info("Returning " + blogs.size() + " blogs");
@@ -26,9 +34,37 @@ public class BlogService {
     }
 
     @Transactional
-    public void addBlog(Blog blog) {
+    public Blog addBlog(Blog blog) {
         logger.info("Adding blog " + blog.getTitle());
         blogRepository.persist(blog);
+        return blog; // Rückgabe des gespeicherten Blogs
+    }
+
+    public void sendValidationRequest(Blog blog) {
+        if (blog.getId() == null) {
+            logger.error("Blog ID is null, cannot send validation request");
+            return;
+        }
+        validationRequestEmitter.send(new ValidationRequest(blog.getId(), blog.getTitle() + " " + blog.getContent()));
+    }
+        
+    @Incoming("validation-response")
+    @Transactional
+    public void sink(ValidationResponse validationResponse) {
+        logger.debug("Validation Response: " + validationResponse);
+        Optional<Blog> blogOptional = blogRepository.findByIdOptional(validationResponse.id());
+        if (blogOptional.isEmpty()) {
+            logger.warn("Entry not found");
+            return;
+        }
+        Blog blog = blogOptional.get();
+        blog.setValid(validationResponse.valid());
+        blogRepository.persist(blog);
+    }
+
+    public void createAndValidateBlog(Blog blog) {
+        Blog savedBlog = addBlog(blog); // Speichert den Blog
+        sendValidationRequest(savedBlog); // Sendet die Validierungsanfrage
     }
 
     @Transactional
@@ -61,38 +97,5 @@ public class BlogService {
         }
     }
 
-    public List<Comment> getCommentsForBlog(Long blogId) {
-        var blog = blogRepository.findByIdOptional(blogId);
-        if (blog.isPresent()) {
-            var comments = blog.get().getComments();
-            logger.info("Returning " + comments.size() + " comments for blog " + blogId);
-            return comments;
-        } else {
-            throw new NotFoundException("Blog not found");
-        }
-    }
-
-    @Transactional
-    public void addCommentToBlog(Long blogId, Comment comment) {
-        var blog = blogRepository.findByIdOptional(blogId);
-        if (blog.isPresent()) {
-            logger.info("Adding comment to blog " + blogId);
-            comment.setBlog(blog.get());
-            blog.get().getComments().add(comment);
-            blogRepository.persist(blog.get());
-        } else {
-            throw new NotFoundException("Blog not found");
-        }
-    }
-
-    @Transactional
-    public void deleteComment(Long blogId, Long commentId) {
-        Blog blog = getBlogById(blogId);
-        Comment comment = Comment.findById(commentId);
-        if (comment == null || comment.getBlog().getId() != blogId) {
-            throw new NotFoundException("Comment with ID " + commentId + " not found for Blog " + blogId);
-        }
-        comment.delete();
-    }
 
 }
