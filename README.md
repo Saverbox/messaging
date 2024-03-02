@@ -1,75 +1,54 @@
-# blog-backend
+# Blog-Backend Applikation
+Dieses Repository enthält eine Blog-Backend-Applikation, die mithilfe von Docker Containern aufgebaut ist. Die Applikation verwendet eine Microservice-Architektur, wobei die einzelnen Services in Docker Containern laufen. Die Container Images sind auf GitHub Container Registry (GHCR) gehostet.
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Voraussetzungen
+Bevor Sie die Applikation starten, stellen Sie sicher, dass Sie die folgenden Tools installiert haben:
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+- Docker
+- Docker Compose
+- Git (optional, für das Klonen des Repositories)
 
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
-
-```
-
-## Umsetzung
-
-Zur Umsetzung der Aufgabe, habe ich eine "Blog" und eine "Comment" Klasse erstellt.
-
-Durch den PanacheEntity Import habe ich die Objekte Persistiert und über die Anotation @OnetoMany und @ManytoOne miteinander verknüpft.
+## Repository klonen
+Um mit dem Projekt zu beginnen, klonen Sie das Repository auf Ihren lokalen Computer:
 
 ```
-@ManyToOne
-    public Blog blog;
+git clone [[URL Ihres GitHub-Repositories]](https://github.com/Saverbox/messaging.git)
+cd ./messaging
+```
+
+## Docker Images und Container
+Die benötigten Docker Images für die verschiedenen Services des Blog-Backends sind auf GHCR gehostet. Sie brauchen keine manuelle Aktion, da die Images automatisch von Docker Compose heruntergeladen werden, wenn Sie die Applikation starten.
+
+## Applikation starten
+Um die Applikation zu starten, führen Sie den folgenden Befehl im Root-Verzeichnis des geklonten Repositories aus:
 
 ```
-## API-Design
+docker-compose up -d
+```
+Dieser Befehl startet alle Services im Hintergrund. Um den Status der laufenden Container zu überprüfen, verwenden Sie:
 
-Für die Abfrage der Blogs stehen folgende Funktionen zur verfügung:
+```
+docker ps
+```
 
-### Blog-API-Funktionen:
-GET /blogs: Ruft alle Blog-Einträge ab.
+## Services
+Die Applikation besteht aus den folgenden Services:
 
-GET /blogs/{id}: Zeigt einen spezifischen Blog-Eintrag basierend auf seiner ID.
+1. blog-backend: Der Hauptservice der Blog-Anwendung.
+2. validation-service: Ein Service zur Validierung von Daten.
+3. redpanda: Ein Kafka-kompatibler Messaging-Service.
+4. database: Eine PostgreSQL-Datenbank für die Datenspeicherung.
 
-POST /blogs: Fügt einen neuen Blog-Eintrag hinzu.
+## API-Endpunkte testen
+Nachdem die Services gestartet sind, können Sie die API-Endpunkte testen. Beispiel:
 
-PUT /blogs/{id}: Aktualisiert einen Blog-Eintrag.
+```
+http POST http://localhost:8080/blogs title="Mein Blogpost 2" content="hftm is best"
 
-DELETE /blogs/{id}: Löscht einen Blog-Eintrag nach ID.
+http POST http://localhost:8080/blogs title="Mein Blogpost 2" content="hftm sucks"  
 
-GET /blogs/{id}/comments: Zeigt alle Kommentare eines Blog-Eintrags basierend auf der Blog-ID.
-
-POST /blogs/{id}/comments: Fügt einen Kommentar zu einem Blog-Eintrag hinzu.
-
-DELETE /blogs/{blogId}/comments/{commentId}: Löscht einen Kommentar von einem bestimmten Blog-Eintrag.
-
-### Kommentar-API-Funktionen:
-GET /comments: Ruft alle Kommentare ab.
-
-GET /comments/{id}: Einen Kommentar anhand seiner ID abrufen.
-
-PUT /comments/{id}: Einen Kommentar aktualisieren.
-
-DELETE /comments/{id}: Einen Kommentar löschen.
-
-## Berechtigungskonzept
-
-Verschiedene Benutzer könnten unterschiedliche Rollen und damit unterschiedliche Berechtigungen haben:
-
-**Guest:** Ein nicht angemeldeter Benutzer. Hat nur Zugriff auf öffentliche Methoden.
-
-**Blogger:** Ein angemeldeter Benutzer, der Blogs und Kommentare erstellen, bearbeiten und löschen kann, aber nur seine eigenen.
-
-**Admin:** Ein Benutzer mit höheren Rechten, der auf alle Funktionen und alle Blog-Einträge zugreifen kann.
-
-Die Funktionen werden folgendermassen zugeteilt:
-
-| Guest / Öffentlich: | Blogger: | Admin: |
-| ----------- | ----------- | ----------- |
-|Alle GET Funktionen| POST / PUT / DELETE auf eigenen Blogs| Alle Funktionen | 
-
-
+http GET http://localhost:8080/blogs
+```
 
 
 
