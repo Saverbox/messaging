@@ -24,10 +24,12 @@ public class Blog{
     private Long id;
     private String title;
     private String content;
+    private boolean valid;
 
     public Blog(String title, String content) {
         this.title = title;
         this.content = content;
+        this.valid = false;
     }
 }
 

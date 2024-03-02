@@ -1,12 +1,15 @@
 package ch.hftm.blog.control;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jboss.logging.Logger;
 
 import ch.hftm.blog.entity.Blog;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -43,6 +46,20 @@ public class BlogService {
             return;
         }
         validationRequestEmitter.send(new ValidationRequest(blog.getId(), blog.getTitle() + " " + blog.getContent()));
+    }
+        
+    @Incoming("validation-response")
+    @Transactional
+    public void sink(ValidationResponse validationResponse) {
+        logger.debug("Validation Response: " + validationResponse);
+        Optional<Blog> blogOptional = blogRepository.findByIdOptional(validationResponse.id());
+        if (blogOptional.isEmpty()) {
+            logger.warn("Entry not found");
+            return;
+        }
+        Blog blog = blogOptional.get();
+        blog.setValid(validationResponse.valid());
+        blogRepository.persist(blog);
     }
 
     public void createAndValidateBlog(Blog blog) {
