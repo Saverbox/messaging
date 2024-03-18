@@ -45,7 +45,7 @@ public class BlogService {
             logger.error("Blog ID is null, cannot send validation request");
             return;
         }
-        validationRequestEmitter.send(new ValidationRequest(blog.getId(), blog.getTitle() + " " + blog.getContent()));
+        validationRequestEmitter.send(new ValidationRequest(blog.getId(), blog.getTitle(), blog.getContent()));
     }
         
     @Incoming("validation-response")
@@ -59,6 +59,10 @@ public class BlogService {
         }
         Blog blog = blogOptional.get();
         blog.setValid(validationResponse.valid());
+        if (!validationResponse.valid() && validationResponse.reasons() != null) {
+            String[] reasonsArray = validationResponse.reasons().toArray(new String[0]);
+            blog.setValidationReasons(reasonsArray);
+        }
         blogRepository.persist(blog);
     }
 

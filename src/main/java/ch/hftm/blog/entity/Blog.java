@@ -25,6 +25,7 @@ public class Blog{
     private String title;
     private String content;
     private boolean valid;
+    private String[] validationReasons;
 
     public Blog(String title, String content) {
         this.title = title;
